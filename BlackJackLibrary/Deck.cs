@@ -1,4 +1,4 @@
-﻿namespace BlackJackLibrary
+﻿/*namespace BlackJackLibrary
 {
     using System.Collections.Generic;
     using System;
@@ -25,7 +25,12 @@
         private readonly Stack<Card> _cards = new Stack<Card>();
         private readonly HashSet<ICallback> _callbacks = new HashSet<ICallback>();
 
-        public Card Draw() => _cards.Pop();
+        public Card Draw() {
+            if (_cards.Count <= 0)
+                PopulateDeck();
+            _cards.Pop();
+        }
+
         public void Shuffle() { }
 
         public void Print()
@@ -49,8 +54,9 @@
         {
             _cards.Clear();
             foreach (Suit suit in Enum.GetValues(typeof(Suit)))
-                foreach (Rank rank in Enum.GetValues(typeof(Suit)))
+                foreach (Rank rank in Enum.GetValues(typeof(Rank)))
                     _cards.Push(new Card(rank, suit));
         }
     }
 }
+*/

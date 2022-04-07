@@ -5,6 +5,6 @@
     public interface ICallback
     {
         [OperationContract(IsOneWay = true)]
-        void UpdateConsole(string nextPlayer, bool over, );
+        void UpdateConsole(int nextPlayer, bool gameOver);
     }
 }

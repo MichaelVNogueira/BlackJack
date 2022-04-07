@@ -1,20 +1,21 @@
 ﻿namespace BlackJackLibrary
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.ServiceModel;
+    using System.Threading.Tasks;
 
     [ServiceContract(CallbackContract = typeof(ICallback))]
     public interface IBlackJack
     {
-        List<Player> Players { [OperationContract] get; }
         int NumPlayers { [OperationContract] get; }
         [OperationContract]
         int JoinGame();
         [OperationContract(IsOneWay = true)]
         void LeaveGame();
         [OperationContract]
-        Card Hit();
+        int Hit();
         [OperationContract(IsOneWay = true)]
         void NextTurn();
     }
@@ -22,12 +23,9 @@
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class BlackJack : IBlackJack
     {
-        public List<Player> Players => _players;
-        public int NumPlayers => _players.Count;
+        public int NumPlayers => _callbacks.Count;
 
         private Dictionary<int, ICallback> _callbacks = new Dictionary<int, ICallback>();
-        private List<Player> _players = new List<Player>();
-        private Deck _deck = new Deck();
         private int _nextId = 1;
         private int _clientIndex;
         private bool gameOver = false;
@@ -39,8 +37,8 @@
             if (_callbacks.ContainsValue(cb))
                 return _callbacks.Keys.ElementAt(_callbacks.Values.ToList().IndexOf(cb));
 
-            _callbacks.Add(_nextId++, cb);
-            return _nextId;
+            _callbacks.Add(_nextId, cb);
+            return _nextId++;
         }
 
         public void LeaveGame()
@@ -57,19 +55,11 @@
             }
         }
 
-        public Card Hit()
-        {
-            Card card = _deck.Draw();
-            _players[_clientIndex].Hand.Add(card);
-            return card;
-        }
+        public int Hit() => new Random().Next(1, 10);
 
         public void NextTurn()
         {
-            // Determine index of the next client that gets to "count"
-            _clientIndex = ++_clientIndex % _callbacks.Count;
-
-            // Update all clients
+            _clientIndex++;
             UpdateClients();
         }
 

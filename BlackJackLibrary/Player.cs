@@ -1,4 +1,4 @@
-﻿namespace BlackJackLibrary
+﻿/*namespace BlackJackLibrary
 {
     using System.Collections.Generic;
     public class Player
@@ -17,3 +17,4 @@
         }
     }
 }
+*/

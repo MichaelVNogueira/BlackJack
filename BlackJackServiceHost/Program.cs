@@ -30,7 +30,6 @@ namespace BlackJackServiceHost
             }
             finally
             {
-                // Wait for a keystroke
                 Console.ReadKey();
                 if (host != null)
                     host.Close();

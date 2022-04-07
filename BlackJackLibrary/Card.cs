@@ -1,4 +1,4 @@
-﻿namespace BlackJackLibrary
+﻿/*namespace BlackJackLibrary
 {
     using System.Runtime.Serialization;
 
@@ -20,11 +20,10 @@
         }
         public Suit Suit { get; }
         public Rank Rank { get; }
-        public int GetValue(bool aceHigh = false)
+        public int GetValue()
         {
             switch(Rank)
             {
-                case Rank.Ace: return aceHigh ? 11 : 1;
                 case Rank.King:
                 case Rank.Queen:
                 case Rank.Jack:
@@ -37,9 +36,11 @@
                 case Rank.Four: return 4;
                 case Rank.Three: return 3;
                 case Rank.Two: return 2;
+                case Rank.Ace: return 1;
                 default: return 0;
             }
         }
         public override string ToString() => $"{Rank} of {Suit}s";
     }
 }
+*/
