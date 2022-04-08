@@ -6,29 +6,34 @@
     using System.Threading;
     using System.Linq;
 
-    class Program
-    {        
+    public class Program
+    {
         private class CallBackObject : ICallback
         {
-            public void UpdateConsole(int nextPlayer, bool gameOver)
+            public void UpdateConsole(int nextPlayer = 1, bool over = false, int lastScore = 0, int maxScore = 0, int winning = 0)
             {
+                if (nextPlayer != 1)
+                    Console.WriteLine($"Player {nextPlayer - 1} ended their turn with a score of {lastScore}");
+                if (winning != 0)
+                    Console.WriteLine($"Player {winning} is winning with a score of {maxScore}");
+
                 activeClientId = nextPlayer;
-                if(clientId == activeClientId)
+                gameOver = over;
+                if (!gameOver)
                 {
-                    Console.WriteLine("It's Your Turn...");
-                    waitHandle.Set();
+                    if (clientId == activeClientId)
+                        Console.WriteLine("It's Your Turn...");
+                    else
+                        Console.WriteLine($"Player {activeClientId}s Turn...");
                 }
-                else
-                {
-                    Console.WriteLine($"Player {activeClientId}s Turn...");
-                }
+                waitHandle.Set();
 
             }
         }
 
-        private static IBlackJack _blackJack = null;
+        private static IBlackJack blackJack = null;
         private static int clientId, activeClientId = 0;
-        private static CallBackObject CBObj = new CallBackObject();
+        private static readonly CallBackObject CBObj = new CallBackObject();
         private static EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
         private static bool gameOver = false;
 
@@ -52,8 +57,8 @@
                             bool choosing = true;
                             int score = 0;
                             Console.Write("Your starting cards are ");
-                            int startCard1 = _blackJack.Hit();
-                            int startCard2 = _blackJack.Hit();
+                            int startCard1 = blackJack.Hit();
+                            int startCard2 = blackJack.Hit();
                             score += startCard1 + startCard2;
                             Console.WriteLine($"{startCard1} and {startCard2}");
                             do
@@ -65,27 +70,28 @@
                                     Console.WriteLine("Invalid input, try again");
                                 else if (choice == 'h')
                                 {
-                                    int value = _blackJack.Hit();
+                                    int value = blackJack.Hit();
                                     Console.WriteLine(value);
                                     score += value;
                                     if (score > 21)
                                     {
                                         Console.WriteLine($"You lost!, your score was {score}");
                                         choosing = false;
-                                        _blackJack.NextTurn();
+                                        blackJack.NextTurn(score);
                                     }
                                 }
-                                else if (choice == 's')
+                                else
                                 {
-                                    _blackJack.NextTurn();
+                                    blackJack.NextTurn(score);
                                     choosing = false;
                                 }
                             } while (choosing);
-                            waitHandle.Reset();
+                            //waitHandle.Reset();
                         }
                     } while (!gameOver);
-
-                    _blackJack.LeaveGame();
+                    //waitHandle.Reset();
+                    Console.WriteLine("Game Is Over");
+                    Console.ReadKey();
                 }
                 else
                     Console.WriteLine("Unable to connect to service");
@@ -96,7 +102,7 @@
             }
             finally
             {
-                _blackJack?.LeaveGame();
+                blackJack?.LeaveGame();
             }                       
         }
 
@@ -105,12 +111,12 @@
             try
             {
                 DuplexChannelFactory<IBlackJack> channel = new DuplexChannelFactory<IBlackJack>(CBObj, "BlackJackEndpoint");
-                _blackJack = channel.CreateChannel();
+                blackJack = channel.CreateChannel();
 
-                clientId = _blackJack.JoinGame();
+                clientId = blackJack.JoinGame();
                 Console.WriteLine($"Connected as Player{clientId}");
                 if (clientId == 1)
-                    CBObj.UpdateConsole(1, false);
+                    CBObj.UpdateConsole();
                 return true;
             }
             catch (Exception ex)

@@ -19,7 +19,7 @@ namespace BlackJackServiceHost
 
             try
             {
-                host = new ServiceHost(typeof(BlackJack));
+                host = new ServiceHost(typeof(BlackJack), new Uri("net.tcp://localhost:13000/BlackJackLibrary/"));
 
                 host.Open();
                 Console.WriteLine("BlackJack Service Started... press any key to exit");
