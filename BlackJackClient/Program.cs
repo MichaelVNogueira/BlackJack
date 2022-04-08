@@ -46,50 +46,53 @@
                     do
                     {
                         waitHandle.WaitOne();
-
-                        if (gameOver)
+                        if (activeClientId == clientId)
                         {
-                            Console.WriteLine("Game Over");
-                            Console.ReadKey();
-                        }
-                        else
-                        {
-                            bool choosing = true;
-                            int score = 0;
-                            Console.Write("Your starting cards are ");
-                            int startCard1 = blackJack.Hit();
-                            int startCard2 = blackJack.Hit();
-                            score += startCard1 + startCard2;
-                            Console.WriteLine($"{startCard1} and {startCard2}");
-                            do
+                            if (gameOver)
                             {
-                                Console.WriteLine($"Your current score is {score}");
-                                Console.WriteLine("Would you like to Hit or stay? (press h or s)");
-                                char choice = Char.ToLower(Console.ReadKey(true).KeyChar);
-                                if (!"hs".Contains(choice))
-                                    Console.WriteLine("Invalid input, try again");
-                                else if (choice == 'h')
+                                Console.WriteLine("Game Over");
+                                Console.ReadKey();
+                            }
+                            else
+                            {
+                                bool choosing = true;
+                                int score = 0;
+                                Console.Write("Your starting cards are ");
+                                int startCard1 = blackJack.Hit();
+                                int startCard2 = blackJack.Hit();
+                                score += startCard1 + startCard2;
+                                Console.WriteLine($"{startCard1} and {startCard2}");
+                                do
                                 {
-                                    int value = blackJack.Hit();
-                                    Console.WriteLine(value);
-                                    score += value;
-                                    if (score > 21)
+                                    Console.WriteLine($"Your current score is {score}");
+                                    if (activeClientId == clientId)
+                                        Console.WriteLine("Would you like to Hit or stay? (press h or s)");
+                                    char choice = Char.ToLower(Console.ReadKey(true).KeyChar);
+                                    if (!"hs".Contains(choice))
+                                        Console.WriteLine("Invalid input, try again");
+                                    else if (choice == 'h')
                                     {
-                                        Console.WriteLine($"You lost!, your score was {score}");
-                                        choosing = false;
-                                        blackJack.NextTurn(score);
+                                        int value = blackJack.Hit();
+                                        Console.WriteLine(value);
+                                        score += value;
+                                        if (score > 21)
+                                        {
+                                            Console.WriteLine($"You lost!, your score was {score}");
+                                            choosing = false;
+                                            blackJack.NextTurn(score);
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    blackJack.NextTurn(score);
-                                    choosing = false;
-                                }
-                            } while (choosing);
-                            //waitHandle.Reset();
+                                    else
+                                    {
+                                        blackJack.NextTurn(score);
+                                        choosing = false;
+                                    }
+                                } while (choosing);
+                                waitHandle.Reset();
+                            }
                         }
                     } while (!gameOver);
-                    //waitHandle.Reset();
+                    waitHandle.Reset();
                     Console.WriteLine("Game Is Over");
                     Console.ReadKey();
                 }
