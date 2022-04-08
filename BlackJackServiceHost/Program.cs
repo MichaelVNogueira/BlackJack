@@ -1,7 +1,7 @@
 ﻿/*
  * Program:     BlackJackServiceHost.exe
  * Module:      Program.cs
- * Authors:     Michael Nogueira, Ali Oseili, Allyson Griffin
+ * Authors:     Michael Nogueira, Ali Osseili, Allyson Griffin
  * Date:        April 8, 2022
  * Description: Implements a service host for Black Jack
  */

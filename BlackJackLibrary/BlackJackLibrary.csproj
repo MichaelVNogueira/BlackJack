@@ -44,11 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlackJack.cs" />
-    <Compile Include="Card.cs" />
-    <Compile Include="Deck.cs" />
     <Compile Include="IBlackJack.cs" />
     <Compile Include="ICallBack.cs" />
-    <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

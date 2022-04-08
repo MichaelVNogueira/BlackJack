@@ -1,4 +1,12 @@
-﻿namespace BlackJackClient
+﻿/*
+ * Program:     BlackJackClient.exe
+ * Module:      Program.cs
+ * Authors:     Michael Nogueira, Ali Osseili, Allyson Griffin
+ * Date:        April 8, 2022
+ * Description: Implements the game logic of BlackJack using the BlackJackService and the BlackJackLibrary
+ */
+
+namespace BlackJackClient
 {
     using BlackJackLibrary;
     using System.ServiceModel;
@@ -10,8 +18,19 @@
     {
         private class CallBackObject : ICallback
         {
-            public void UpdateConsole(int nextPlayer = 1, bool over = false, int lastScore = 0, int maxScore = 0, int winning = 0)
+            /// <summary>
+            ///     This function allows the service to update the clients via callbacks
+            /// </summary>
+            /// <param name="nextPlayer"></param>
+            /// <param name="over"></param>
+            /// <param name="lastScore"></param>
+            /// <param name="maxScore"></param>
+            /// <param name="winning"></param>
+            /// <param name="isLobbyFull"></param>
+            public void UpdateConsole(int nextPlayer = 1, bool over = false, int lastScore = 0, int maxScore = 0, int winning = 0, bool isLobbyFull = false)
             {
+                if (!isLobbyFull) return;
+
                 if (nextPlayer != 1)
                     Console.WriteLine($"Player {nextPlayer - 1} ended their turn with a score of {lastScore}");
                 if (winning != 0)
@@ -26,8 +45,14 @@
                     else
                         Console.WriteLine($"Player {activeClientId}s Turn...");
                 }
-                waitHandle.Set();
-
+                try
+                {
+                    waitHandle.Set();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
@@ -55,6 +80,7 @@
                             }
                             else
                             {
+                                // start turn
                                 bool choosing = true;
                                 int score = 0;
                                 Console.Write("Your starting cards are ");
@@ -62,6 +88,8 @@
                                 int startCard2 = blackJack.Hit();
                                 score += startCard1 + startCard2;
                                 Console.WriteLine($"{startCard1} and {startCard2}");
+
+                                // prompt for hit or stay
                                 do
                                 {
                                     Console.WriteLine($"Your current score is {score}");
@@ -92,6 +120,7 @@
                             }
                         }
                     } while (!gameOver);
+
                     waitHandle.Reset();
                     Console.WriteLine("Game Is Over");
                     Console.ReadKey();
@@ -109,6 +138,10 @@
             }                       
         }
 
+        /// <summary>
+        ///     Connects a client to the BlackJackService
+        /// </summary>
+        /// <returns>bool</returns>
         private static bool Connect()
         {
             try
@@ -119,7 +152,25 @@
                 clientId = blackJack.JoinGame();
                 Console.WriteLine($"Connected as Player{clientId}");
                 if (clientId == 1)
+                {
+                    bool valid = false;
+                    do
+                    {
+                        Console.Write("Enter number of players?:");
+                        if (valid = Int32.TryParse(Console.ReadLine(), out int val))
+                            blackJack.NumPlayers = val;
+                    } while (!valid);
+                    Console.WriteLine($"Waiting for {blackJack.NumPlayers} players...");
                     CBObj.UpdateConsole();
+                }
+                else
+                {
+                    if (clientId < blackJack.NumPlayers)
+                        Console.WriteLine($"Waiting for {blackJack.NumPlayers} players...");
+                    else
+                        CBObj.UpdateConsole(isLobbyFull: true);
+                }
+
                 return true;
             }
             catch (Exception ex)
