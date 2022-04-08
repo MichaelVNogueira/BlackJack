@@ -134,7 +134,7 @@ namespace BlackJackClient
             }
             finally
             {
-                blackJack?.LeaveGame();
+                blackJack.LeaveGame();
             }                       
         }
 

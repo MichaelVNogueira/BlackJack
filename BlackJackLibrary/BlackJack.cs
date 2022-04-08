@@ -50,14 +50,15 @@ namespace BlackJackLibrary
         public void LeaveGame()
         {
             ICallback cb = OperationContext.Current.GetCallbackChannel<ICallback>();
-
             if (_callbacks.ContainsValue(cb))
             {
                 int i = _callbacks.Values.ToList().IndexOf(cb);
                 int id = _callbacks.ElementAt(i).Key;
                 _callbacks.Remove(id);
                 if (i == _clientIndex)
-                    UpdateClients();                
+                    UpdateClients();
+                else if (_clientIndex > i)
+                    _clientIndex--;
             }
         }
 
